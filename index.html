@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Islamic App</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #22c55e;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      background: #22c55e;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #content {
+      margin-top: 20px;
+    }
+
+    audio {
+      width: 90%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🕌 Islamic App</h1>
+
+<button onclick="loadSurah()">Read Qur'an</button>
+<button onclick="showAudioList()">Play Audio</button>
+<button onclick="loadDuas()">Duas</button>
+
+<div id="content"></div>
+
+<audio id="audioPlayer" controls></audio>
+
+<script>
+
+let currentSurah = 1;
+
+// 📖 Show Surah list
+function loadSurah() {
+  let output = "<h2>Select Surah</h2>";
+
+  for (let i = 1; i <= 114; i++) {
+    output += `<button onclick="showSurah(${i})">Surah ${i}</button><br>`;
+  }
+
+  document.getElementById("content").innerHTML = output;
+}
+
+// 📖 Show Surah text
+function showSurah(num) {
+  fetch(`https://api.alquran.cloud/v1/surah/${num}`)
+  .then(res => res.json())
+  .then(data => {
+    let ayahs = data.data.ayahs;
+    let name = data.data.englishName;
+
+    let output = `<h2>${name}</h2>`;
+
+    ayahs.forEach(a => {
+      output += `<p>${a.text}</p>`;
+    });
+
+    document.getElementById("content").innerHTML = output;
+  });
+}
+
+// 🎧 Show audio list
+function showAudioList() {
+  let output = "<h2>Select Surah Audio</h2>";
+
+  for (let i = 1; i <= 114; i++) {
+    output += `<button onclick="playSurah(${i})">Surah ${i}</button><br>`;
+  }
+
+  document.getElementById("content").innerHTML = output;
+}
+
+// ▶️ Play Surah
+function playSurah(num) {
+  currentSurah = num;
+
+  let player = document.getElementById("audioPlayer");
+
+  // convert to 3-digit (001, 002...)
+  let formatted = num.toString().padStart(3, '0');
+
+  player.src = "https://server8.mp3quran.net/afs/" + formatted + ".mp3";
+
+  player.load();
+}
+
+// 🤲 Duas
+function loadDuas() {
+  let duas = [
+    {title: "Before Sleep", text: "Bismika Allahumma amutu wa ahya"},
+    {title: "After Waking", text: "Alhamdulillahilladhi ahyana ba’da ma amatana"}
+  ];
+
+  let output = "<h2>Duas</h2>";
+
+  duas.forEach(d => {
+    output += `<h3>${d.title}</h3><p>${d.text}</p>`;
+  });
+
+  document.getElementById("content").innerHTML = output;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Read Surah</title>
+</head>
+
+<body>
+  <h2 id="title"></h2>
+  <div id="ayahs"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    fetch(`https://api.alquran.cloud/v1/surah/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("title").innerText = data.data.name;
+
+        const ayahs = data.data.ayahs;
+        const container = document.getElementById("ayahs");
+
+        ayahs.forEach(a => {
+          const p = document.createElement("p");
+          p.innerText = a.text;
+          container.appendChild(p);
+        });
+      });
+  </script>
+
+</body>
+</html>
